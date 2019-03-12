@@ -1,6 +1,13 @@
 # art-education-server
 
-导入数据库
-> mysql -u 用户名 -p 数据库名 < 文件名.sql
+## 导入数据库
+1. 首先建空数据库
+> mysql>create database belton;
 
-> mysql -u root -p belton < belton.sql;
+2. 导入数据库
+
+    (1) 选择数据库
+    > mysql>use belton;
+
+    (2) 导入数据（注意sql文件的路径）
+    > mysql>source belton.sql;
