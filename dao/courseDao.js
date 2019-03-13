@@ -1,6 +1,6 @@
 var mysql = require('mysql')
 var $conf = require('../conf/db')
-var $sql = require('./studentSqlMapping')
+var $sql = require('./courseSqlMapping')
 
 var pool = mysql.createPool($conf.mysql)
 
@@ -121,6 +121,54 @@ module.exports = {
           }
         })
       }
+    })
+  },
+  queryType: function (req, res, next) {
+    pool.getConnection(function (err, connection) {
+      if (!err) {
+        connection.query($sql.queryType, function (err, result) {
+          if (!err) {
+            jsonWrite(res, {
+              code: 200,
+              data: {
+                items: result
+              }
+            })
+            connection.release()
+          }
+        })
+      }
+    })
+  },
+  addType: function (req, res, next) {
+    pool.getConnection(function (err, connection) {
+      if (err) {
+        throw err
+      }
+      // 获取前台页面传过来的参数
+      var param = req.query || req.params
+
+      // 建立连接，向表中插入值
+      // 'INSERT INTO user(id, name, age) VALUES(0,?,?)',
+
+      connection.query($sql.addType, param.name, function (err, result) {
+        if (err) {
+          throw err
+        }
+
+        if (result) {
+          result = {
+            code: 200,
+            data: '增加成功'
+          }
+        }
+
+        // 以json形式，把操作结果返回给前台页面
+        jsonWrite(res, result)
+
+        // 释放连接
+        connection.release()
+      })
     })
   }
 }
