@@ -1,5 +1,8 @@
 # art-education-server
 
+## 导出数据库
+> mysqldump -u root -p --databases belton >belton.sql
+
 ## 导入数据库
 1. 首先建空数据库
 > mysql>create database belton;
