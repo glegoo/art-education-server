@@ -16,6 +16,14 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Current Database: `belton`
+--
+
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `belton` /*!40100 DEFAULT CHARACTER SET latin1 */;
+
+USE `belton`;
+
+--
 -- Table structure for table `course_type`
 --
 
@@ -23,10 +31,10 @@ DROP TABLE IF EXISTS `course_type`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `course_type` (
-  `id` int(10) unsigned NOT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` char(20) NOT NULL,
   PRIMARY KEY (`id`,`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -35,6 +43,7 @@ CREATE TABLE `course_type` (
 
 LOCK TABLES `course_type` WRITE;
 /*!40000 ALTER TABLE `course_type` DISABLE KEYS */;
+INSERT INTO `course_type` VALUES (1,'小提琴'),(2,'钢琴'),(3,'吉他'),(4,'尤克里里'),(5,'架子鼓'),(6,'古筝'),(7,'二胡'),(8,'声乐'),(9,'萨克斯'),(10,'乐理');
 /*!40000 ALTER TABLE `course_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -132,13 +141,13 @@ DROP TABLE IF EXISTS `students`;
 CREATE TABLE `students` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `sex` tinyint(1) unsigned NOT NULL,
+  `sex` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `age` tinyint(3) unsigned DEFAULT '0',
+  `contact` tinyint(1) unsigned DEFAULT '0',
   `phone` char(13) CHARACTER SET latin1 DEFAULT '-',
-  `add_time` int(10) unsigned NOT NULL DEFAULT '0',
-  `ps` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+  `ps` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -147,7 +156,7 @@ CREATE TABLE `students` (
 
 LOCK TABLES `students` WRITE;
 /*!40000 ALTER TABLE `students` DISABLE KEYS */;
-INSERT INTO `students` VALUES (1,'刘浩天',0,11,'-',0,NULL);
+INSERT INTO `students` VALUES (1,'刘浩天',0,11,0,NULL,'话痨'),(2,'毛紫淇',1,8,2,NULL,NULL),(3,'天佑',0,8,0,NULL,NULL),(4,'满满',0,4,0,NULL,NULL),(5,'朵朵',1,5,0,NULL,NULL),(6,'大川',0,5,0,NULL,NULL),(7,'李雨桐',1,10,0,NULL,NULL),(8,'张润生',0,14,0,NULL,NULL),(9,'尚志远',0,10,0,NULL,NULL),(10,'张晴',1,9,0,NULL,NULL),(11,'王曼熙',1,4,4,NULL,NULL);
 /*!40000 ALTER TABLE `students` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -185,10 +194,8 @@ CREATE TABLE `teachers` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` char(20) NOT NULL,
   `sex` tinyint(1) unsigned NOT NULL,
-  `age` tinyint(3) unsigned DEFAULT '0',
   `phone` char(13) CHARACTER SET latin1 DEFAULT '-',
-  `add_time` int(10) DEFAULT NULL,
-  `ps` varchar(45) CHARACTER SET latin1 DEFAULT NULL,
+  `ps` varchar(45) DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -211,4 +218,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-03-12 17:03:39
+-- Dump completed on 2019-03-14 19:57:24
