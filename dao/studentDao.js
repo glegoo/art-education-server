@@ -27,7 +27,7 @@ module.exports = {
       // 建立连接，向表中插入值
       // 'INSERT INTO user(id, name, age) VALUES(0,?,?)',
 
-      connection.query($sql.insert, [param.name, param.age, param.sex, param.add_time], function (err, result) {
+      connection.query($sql.insert, [param.name, param.sex, param.age, param.contact, param.phone, param.ps], function (err, result) {
         if (err) {
           throw err
         }
@@ -35,7 +35,8 @@ module.exports = {
         if (result) {
           result = {
             code: 200,
-            msg: '增加成功'
+            msg: '增加成功',
+            id: result.insertId
           }
         }
 
@@ -72,7 +73,7 @@ module.exports = {
   update: function (req, res, next) {
     // update by id
     // 为了简单，要求同时传name和age两个参数
-    var param = req.body
+    var param = req.query || req.params
     if (param.name == null || param.age == null || param.id == null) {
       jsonWrite(res, undefined)
       return
@@ -80,20 +81,29 @@ module.exports = {
 
     pool.getConnection(function (err, connection) {
       if (!err) {
-        connection.query($sql.update, [param.name, param.age, +param.id], function (err, result) {
+        connection.query($sql.update, [param.name, param.sex, param.age, param.contact, param.phone, param.ps, +param.id], function (err, result) {
           if (!err) {
             // 使用页面进行跳转提示
             if (result.affectedRows > 0) {
-              res.render('suc', {
-                result: result
-              }) // 第二个参数可以直接在jade中使用
+              result = {
+                code: 200,
+                message: '编辑成功'
+              }
             } else {
-              res.render('fail', {
-                result: result
-              })
+              result = {
+                code: -1,
+                message: '找不到该学员'
+              }
             }
             connection.release()
+          } else {
+            result = {
+              code: -2,
+              message: '操作失败'
+            }
+            console.log(err)
           }
+          jsonWrite(res, result)
         })
       }
     })
@@ -116,7 +126,13 @@ module.exports = {
       if (!err) {
         connection.query($sql.queryAll, function (err, result) {
           if (!err) {
-            jsonWrite(res, result)
+            jsonWrite(res, {
+              code: 200,
+              data: {
+                total: result.length,
+                items: result
+              }
+            })
             connection.release()
           }
         })
