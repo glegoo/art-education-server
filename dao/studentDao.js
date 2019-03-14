@@ -131,13 +131,22 @@ module.exports = {
         var param = req.query || req.params
         var sql = 'select * from students where name LIKE \'%' + param.name + '%\' order by id '
         sql += param.sort === '-id' ? 'desc' : 'asc'
+        var start = (param.page - 1) * param.limit
+        sql += ' LIMIT ' + start + ',' + param.limit
         connection.query(sql, function (err, result) {
           if (!err) {
-            jsonWrite(res, {
-              code: 200,
-              data: {
-                total: result.length,
-                items: result
+            var countSql = 'select COUNT(*) from students where name LIKE \'%' + param.name + '%\''
+            connection.query(countSql, function (err, countResult) {
+              if (!err) {
+                jsonWrite(res, {
+                  code: 200,
+                  data: {
+                    total: countResult[0]['COUNT(*)'],
+                    items: result
+                  }
+                })
+              } else {
+                databaseError(res, err)
               }
             })
             connection.release()
