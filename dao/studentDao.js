@@ -15,6 +15,14 @@ var jsonWrite = function (res, ret) {
   }
 }
 
+var databaseError = function (res, err) {
+  console.log(err)
+  jsonWrite(res, {
+    code: -2,
+    message: '数据库操作失败'
+  })
+}
+
 module.exports = {
   add: function (req, res, next) {
     pool.getConnection(function (err, connection) {
@@ -95,15 +103,11 @@ module.exports = {
                 message: '找不到该学员'
               }
             }
+            jsonWrite(res, result)
             connection.release()
           } else {
-            result = {
-              code: -2,
-              message: '操作失败'
-            }
-            console.log(err)
+            databaseError(res, err)
           }
-          jsonWrite(res, result)
         })
       }
     })
@@ -124,7 +128,10 @@ module.exports = {
   queryAll: function (req, res, next) {
     pool.getConnection(function (err, connection) {
       if (!err) {
-        connection.query($sql.queryAll, function (err, result) {
+        var param = req.query || req.params
+        var sql = 'select * from students where name LIKE \'%' + param.name + '%\' order by id '
+        sql += param.sort === '-id' ? 'desc' : 'asc'
+        connection.query(sql, function (err, result) {
           if (!err) {
             jsonWrite(res, {
               code: 200,
@@ -134,6 +141,8 @@ module.exports = {
               }
             })
             connection.release()
+          } else {
+            databaseError(res, err)
           }
         })
       }
