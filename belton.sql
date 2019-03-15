@@ -56,15 +56,11 @@ DROP TABLE IF EXISTS `courses`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `courses` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `type` tinyint(2) unsigned NOT NULL,
-  `student` int(10) unsigned NOT NULL,
-  `teacher` int(10) unsigned NOT NULL,
+  `course_type` tinyint(2) unsigned NOT NULL,
+  `course_mode` tinyint(1) unsigned NOT NULL,
   `week` tinyint(1) unsigned NOT NULL,
   `begin_time` time(6) NOT NULL,
   `end_time` time(6) NOT NULL,
-  `fee` int(10) unsigned NOT NULL,
-  `salary` int(10) unsigned NOT NULL,
-  `left_num` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -109,26 +105,28 @@ LOCK TABLES `records` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `student_courses`
+-- Table structure for table `student_course`
 --
 
-DROP TABLE IF EXISTS `student_courses`;
+DROP TABLE IF EXISTS `student_course`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `student_courses` (
+CREATE TABLE `student_course` (
   `student_id` int(10) unsigned NOT NULL,
   `course_id` int(10) unsigned NOT NULL,
+  `fee` tinyint(3) unsigned DEFAULT NULL,
+  `left_times` tinyint(3) unsigned DEFAULT NULL,
   PRIMARY KEY (`student_id`,`course_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `student_courses`
+-- Dumping data for table `student_course`
 --
 
-LOCK TABLES `student_courses` WRITE;
-/*!40000 ALTER TABLE `student_courses` DISABLE KEYS */;
-/*!40000 ALTER TABLE `student_courses` ENABLE KEYS */;
+LOCK TABLES `student_course` WRITE;
+/*!40000 ALTER TABLE `student_course` DISABLE KEYS */;
+/*!40000 ALTER TABLE `student_course` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -161,26 +159,27 @@ INSERT INTO `students` VALUES (1,'刘浩天',0,11,0,NULL,'话痨'),(2,'毛紫淇
 UNLOCK TABLES;
 
 --
--- Table structure for table `teacher_courses`
+-- Table structure for table `teacher_course`
 --
 
-DROP TABLE IF EXISTS `teacher_courses`;
+DROP TABLE IF EXISTS `teacher_course`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `teacher_courses` (
+CREATE TABLE `teacher_course` (
   `teacher_id` int(10) unsigned NOT NULL,
   `course_id` int(10) unsigned NOT NULL,
+  `salary` tinyint(3) unsigned NOT NULL,
   PRIMARY KEY (`teacher_id`,`course_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `teacher_courses`
+-- Dumping data for table `teacher_course`
 --
 
-LOCK TABLES `teacher_courses` WRITE;
-/*!40000 ALTER TABLE `teacher_courses` DISABLE KEYS */;
-/*!40000 ALTER TABLE `teacher_courses` ENABLE KEYS */;
+LOCK TABLES `teacher_course` WRITE;
+/*!40000 ALTER TABLE `teacher_course` DISABLE KEYS */;
+/*!40000 ALTER TABLE `teacher_course` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -197,7 +196,7 @@ CREATE TABLE `teachers` (
   `phone` char(13) CHARACTER SET latin1 DEFAULT '-',
   `ps` varchar(45) DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -206,7 +205,7 @@ CREATE TABLE `teachers` (
 
 LOCK TABLES `teachers` WRITE;
 /*!40000 ALTER TABLE `teachers` DISABLE KEYS */;
-INSERT INTO `teachers` VALUES (1,'曹子威',0,NULL,'');
+INSERT INTO `teachers` VALUES (1,'曹子威',0,NULL,''),(2,'韩静怡',1,NULL,NULL);
 /*!40000 ALTER TABLE `teachers` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -219,4 +218,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-03-14 20:26:50
+-- Dump completed on 2019-03-15 17:48:44
