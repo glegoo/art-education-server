@@ -128,11 +128,14 @@ module.exports = {
   queryAll: function (req, res, next) {
     pool.getConnection(function (err, connection) {
       if (!err) {
+        var sql = 'select * from teachers'
         var param = req.query || req.params
-        var sql = 'select * from teachers where name LIKE \'%' + param.name + '%\' order by id '
-        sql += param.sort === '-id' ? 'desc' : 'asc'
-        var start = (param.page - 1) * param.limit
-        sql += ' LIMIT ' + start + ',' + param.limit
+        if (param.name && param.sort) {
+          sql += 'where name LIKE \'%' + param.name + '%\' order by id '
+          sql += param.sort === '-id' ? 'desc' : 'asc'
+          var start = (param.page - 1) * param.limit
+          sql += ' LIMIT ' + start + ',' + param.limit
+        }
         connection.query(sql, function (err, result) {
           if (!err) {
             var countSql = 'select COUNT(*) from teachers where name LIKE \'%' + param.name + '%\''

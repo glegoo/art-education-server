@@ -31,4 +31,8 @@ router.get('/update', function (req, res, next) {
   studentDao.update(req, res, next)
 })
 
+router.get('/find_by_name', function (req, res, next) {
+  studentDao.queryByName(req, res, next)
+})
+
 module.exports = router

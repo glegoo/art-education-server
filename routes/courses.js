@@ -39,4 +39,7 @@ router.get('/add_type', function (req, res, next) {
   courseDao.addType(req, res, next)
 })
 
+router.get('/course_teacher_list', function (req, res, next) {
+  courseDao.queryCourseTeacher(req, res, next)
+})
 module.exports = router

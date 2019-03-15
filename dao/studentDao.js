@@ -129,10 +129,14 @@ module.exports = {
     pool.getConnection(function (err, connection) {
       if (!err) {
         var param = req.query || req.params
-        var sql = 'select * from students where name LIKE \'%' + param.name + '%\' order by id '
-        sql += param.sort === '-id' ? 'desc' : 'asc'
-        var start = (param.page - 1) * param.limit
-        sql += ' LIMIT ' + start + ',' + param.limit
+        var sql = 'select * from students where name LIKE \'%' + param.name + '%\''
+        if (param.sort) {
+          sql += param.sort === '-id' ? ' order by id desc' : ' order by id asc'
+        }
+        if (param.page && param.limit) {
+          var start = (param.page - 1) * param.limit
+          sql += ' LIMIT ' + start + ',' + param.limit
+        }
         connection.query(sql, function (err, result) {
           if (!err) {
             var countSql = 'select COUNT(*) from students where name LIKE \'%' + param.name + '%\''
@@ -149,6 +153,31 @@ module.exports = {
                 databaseError(res, err)
               }
             })
+            connection.release()
+          } else {
+            databaseError(res, err)
+          }
+        })
+      }
+    })
+  },
+  queryByName: function (req, res, next) {
+    var name = req.query.name // 为了拼凑正确的sql语句，这里要转下整数
+    pool.getConnection(function (err, connection) {
+      if (!err) {
+        connection.query($sql.queryByName, name, function (err, result) {
+          if (!err) {
+            if (result.length > 0) {
+              jsonWrite(res, {
+                code: 200,
+                data: result[0]
+              })
+            } else {
+              jsonWrite(res, {
+                code: -1,
+                message: '找不到该学员'
+              })
+            }
             connection.release()
           } else {
             databaseError(res, err)

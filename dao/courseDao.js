@@ -170,5 +170,25 @@ module.exports = {
         connection.release()
       })
     })
+  },
+
+  queryCourseTeacher: function (req, res, next) {
+    pool.getConnection(function (err, connection) {
+      if (!err) {
+        let sql = 'SELECT * FROM courses WHERE courses.id NOT IN (SELECT course_id FROM teacher_course);'
+        // let sql = 'SELECT student.* FROM student LEFT JOIN sc ON student.id=sc.sid LEFT JOIN course ON course.id = sc.cid WHERE course.sname IS NULL;'
+        connection.query(sql, function (err, result) {
+          if (!err) {
+            jsonWrite(res, {
+              code: 200,
+              data: {
+                items: result
+              }
+            })
+            connection.release()
+          }
+        })
+      }
+    })
   }
 }
