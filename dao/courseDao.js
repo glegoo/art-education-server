@@ -26,11 +26,20 @@ module.exports = {
 
       // 建立连接，向表中插入值
       // 'INSERT INTO user(id, name, age) VALUES(0,?,?)',
+      var data = [
+        param.course_type,
+        param.course_mode,
+        param.week,
+        param.begin_time,
+        param.end_time
+      ]
 
-      connection.query($sql.insert, [param.name, param.age, param.sex, param.add_time], function (err, result) {
+      connection.query($sql.insert, data, function (err, result) {
         if (err) {
           throw err
         }
+
+        var id = result.insertId
 
         if (result) {
           result = {
