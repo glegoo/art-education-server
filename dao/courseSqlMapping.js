@@ -6,7 +6,8 @@ var student = {
   queryAll: 'select * from students;',
   queryType: 'select * from course_type',
   addType: 'insert into course_type(id, name) values(0,?);',
-  addStudentCourse: 'insert into student_course(student_id, course_id);'
+  addStudentCourse: 'insert into student_course(student_id, course_id) values(?,?);',
+  addTeacherCourse: 'insert into teacher_course(teacher_id, course_id, salary) values(?,?,?);'
 }
 
 module.exports = student

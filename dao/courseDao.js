@@ -41,6 +41,21 @@ module.exports = {
 
         var id = result.insertId
 
+        param.students.forEach(student => {
+          student = JSON.parse(student)
+          connection.query($sql.addStudentCourse, [student.id, id], function (err, result) {
+            if (err) {
+              throw err
+            }
+          })
+        })
+
+        connection.query($sql.addTeacherCourse, [param.teacher, id, param.salary], function (err, result) {
+          if (err) {
+            throw err
+          }
+        })
+
         if (result) {
           result = {
             code: 200,
