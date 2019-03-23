@@ -1,5 +1,7 @@
 var student = {
-  insert: 'insert into courses(id, course_type, course_mode, week, begin_time, end_time) values(0,?,?,?,?,?);',
+  insert: `insert into courses(id, course_type, course_mode, week, begin_time, end_time) values(0,?,?,?,?,?);  
+          set @id = last_insert_id();
+          insert into teacher_course(teacher_id, course_id, salary) values(?,@id,?);`,
   update: 'update students set name=?, age=?, sex=?, add_time=? where id=?;',
   delete: 'delete from students where id=?;',
   queryById: 'select * from students where id=?;',

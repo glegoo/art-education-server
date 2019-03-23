@@ -15,7 +15,7 @@ router.get('/add', function (req, res, next) {
   courseDao.add(req, res, next)
 })
 
-router.get('/queryAll', function (req, res, next) {
+router.get('/list', function (req, res, next) {
   courseDao.queryAll(req, res, next)
 })
 

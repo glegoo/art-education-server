@@ -137,20 +137,15 @@ module.exports = {
           var start = (param.page - 1) * param.limit
           sql += ' LIMIT ' + start + ',' + param.limit
         }
+        var countSql = 'select COUNT(*) from students where name LIKE \'%' + param.name + '%\';'
+        sql += ';\n' + countSql
         connection.query(sql, function (err, result) {
           if (!err) {
-            var countSql = 'select COUNT(*) from students where name LIKE \'%' + param.name + '%\''
-            connection.query(countSql, function (err, countResult) {
-              if (!err) {
-                jsonWrite(res, {
-                  code: 200,
-                  data: {
-                    total: countResult[0]['COUNT(*)'],
-                    items: result
-                  }
-                })
-              } else {
-                databaseError(res, err)
+            jsonWrite(res, {
+              code: 200,
+              data: {
+                total: result[1][0]['COUNT(*)'],
+                items: result[0]
               }
             })
             connection.release()

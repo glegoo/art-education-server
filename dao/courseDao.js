@@ -31,7 +31,9 @@ module.exports = {
         param.course_mode,
         param.week,
         param.begin_time,
-        param.end_time
+        param.end_time,
+        param.teacher,
+        param.salary
       ]
 
       connection.query($sql.insert, data, function (err, result) {
@@ -39,7 +41,7 @@ module.exports = {
           throw err
         }
 
-        var id = result.insertId
+        var id = result[0].insertId
 
         param.students.forEach(student => {
           student = JSON.parse(student)
@@ -48,12 +50,6 @@ module.exports = {
               throw err
             }
           })
-        })
-
-        connection.query($sql.addTeacherCourse, [param.teacher, id, param.salary], function (err, result) {
-          if (err) {
-            throw err
-          }
         })
 
         if (result) {
@@ -138,10 +134,44 @@ module.exports = {
   queryAll: function (req, res, next) {
     pool.getConnection(function (err, connection) {
       if (!err) {
-        connection.query($sql.queryAll, function (err, result) {
+        var param = req.query || req.params
+        // var sql = 'select * from courses where name LIKE \'%' + param.name + '%\''
+        var sql = 'select * from courses'
+        if (param.sort) {
+          sql += param.sort === '-id' ? ' order by id desc' : ' order by id asc'
+        }
+        if (param.page && param.limit) {
+          var start = (param.page - 1) * param.limit
+          sql += ' LIMIT ' + start + ',' + param.limit
+        }
+        // var countSql = 'select COUNT(*) from students where name LIKE \'%' + param.name + '%\';'
+        var countSql = 'select COUNT(*) from courses'
+        sql += ';\n' + countSql
+        connection.query(sql, function (err, result) {
           if (!err) {
-            jsonWrite(res, result)
+
+            result[0].forEach((course, index) => {
+              var sql = 'select * from student_course where course_id = ' + course.id + ';\n'
+              sql += 'select * from teacher_course where course_id = ' + course.id + ';'
+              connection.query(sql, function (err, students) {
+                if (!err) {
+                  course.students = students
+
+                  if (index == result[0].length - 1) {
+                    jsonWrite(res, {
+                      code: 200,
+                      data: {
+                        total: result[1][0]['COUNT(*)'],
+                        items: result[0]
+                      }
+                    })
+                  }
+                }
+              })
+            });
             connection.release()
+          } else {
+            databaseError(res, err)
           }
         })
       }
