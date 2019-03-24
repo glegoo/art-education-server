@@ -136,7 +136,27 @@ module.exports = {
       if (!err) {
         var param = req.query || req.params
         // var sql = 'select * from courses where name LIKE \'%' + param.name + '%\''
-        var sql = 'select * from courses'
+        var sql = `select sql_calc_found_rows 
+        c.id,
+        c.course_type,
+        c.course_mode,
+        teacher_id,
+        t.name as teacher_name,
+        salary,
+        c.week,
+        c.begin_time,
+        c.end_time,
+        group_concat(student_id) as students,
+        group_concat(s.name) as students_name,
+        group_concat(fee) as students_fee,
+        group_concat(left_times) as students_left_times 
+        from 
+        student_course as sc 
+        left join students as s on s.id=sc.student_id 
+        left join courses as c on c.id=sc.course_id 
+        left join teacher_course as tc on c.id=tc.course_id 
+        left join teachers as t on t.id=tc.teacher_id 
+        group by(c.id)`
         if (param.sort) {
           sql += param.sort === '-id' ? ' order by id desc' : ' order by id asc'
         }
@@ -145,29 +165,16 @@ module.exports = {
           sql += ' LIMIT ' + start + ',' + param.limit
         }
         // var countSql = 'select COUNT(*) from students where name LIKE \'%' + param.name + '%\';'
-        var countSql = 'select COUNT(*) from courses'
+        var countSql = 'select found_rows() as count;'
         sql += ';\n' + countSql
         connection.query(sql, function (err, result) {
           if (!err) {
-
-            result[0].forEach((course, index) => {
-              var sql = 'select * from student_course where course_id = ' + course.id + ';\n'
-              sql += 'select * from teacher_course where course_id = ' + course.id + ';'
-              connection.query(sql, function (err, students) {
-                if (!err) {
-                  course.students = students
-
-                  if (index == result[0].length - 1) {
-                    jsonWrite(res, {
-                      code: 200,
-                      data: {
-                        total: result[1][0]['COUNT(*)'],
-                        items: result[0]
-                      }
-                    })
-                  }
-                }
-              })
+            jsonWrite(res, {
+              code: 200,
+              data: {
+                total: result[1][0].count,
+                items: result[0]
+              }
             });
             connection.release()
           } else {

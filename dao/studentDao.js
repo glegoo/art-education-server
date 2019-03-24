@@ -129,7 +129,7 @@ module.exports = {
     pool.getConnection(function (err, connection) {
       if (!err) {
         var param = req.query || req.params
-        var sql = 'select * from students where name LIKE \'%' + param.name + '%\''
+        var sql = 'select sql_calc_found_rows * from students where name LIKE \'%' + param.name + '%\''
         if (param.sort) {
           sql += param.sort === '-id' ? ' order by id desc' : ' order by id asc'
         }
@@ -137,14 +137,14 @@ module.exports = {
           var start = (param.page - 1) * param.limit
           sql += ' LIMIT ' + start + ',' + param.limit
         }
-        var countSql = 'select COUNT(*) from students where name LIKE \'%' + param.name + '%\';'
+        var countSql = 'select found_rows() as count;'
         sql += ';\n' + countSql
         connection.query(sql, function (err, result) {
           if (!err) {
             jsonWrite(res, {
               code: 200,
               data: {
-                total: result[1][0]['COUNT(*)'],
+                total: result[1][0].count,
                 items: result[0]
               }
             })
