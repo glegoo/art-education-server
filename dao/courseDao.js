@@ -94,8 +94,24 @@ module.exports = {
     // 为了简单，要求同时传name和age两个参数
     var param = req.body
     if (param.name == null || param.age == null || param.id == null) {
-      jsonWrite(res, undefined)
-      return
+      if (!err) {
+        // 使用页面进行跳转提示
+        if (result.affectedRows > 0) {
+          result = {
+            code: 200,
+            message: '编辑成功'
+          }
+        } else {
+          result = {
+            code: -1,
+            message: '找不到该学员'
+          }
+        }
+        jsonWrite(res, result)
+        connection.release()
+      } else {
+        databaseError(res, err)
+      }
     }
 
     pool.getConnection(function (err, connection) {
@@ -140,13 +156,13 @@ module.exports = {
         c.id,
         c.course_type,
         c.course_mode,
-        teacher_id,
+        teacher_id as teacher,
         t.name as teacher_name,
         salary,
         c.week,
         c.begin_time,
         c.end_time,
-        group_concat(student_id) as students,
+        group_concat(student_id) as students_id,
         group_concat(s.name) as students_name,
         group_concat(fee) as students_fee,
         group_concat(left_times) as students_left_times 
