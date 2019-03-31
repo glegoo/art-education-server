@@ -94,44 +94,37 @@ module.exports = {
   },
   update: function (req, res, next) {
     // update by id
-    // 为了简单，要求同时传name和age两个参数
-    var param = req.body
+    var param = req.query || req.params
     if (param.name == null || param.age == null || param.id == null) {
-      if (!err) {
-        // 使用页面进行跳转提示
-        if (result.affectedRows > 0) {
-          result = {
-            code: 200,
-            message: '编辑成功'
-          }
-        } else {
-          result = {
-            code: -1,
-            message: '找不到该学员'
-          }
-        }
-        jsonWrite(res, result)
-        connection.release()
-      } else {
-        databaseError(res, err)
-      }
+      jsonWrite(res, undefined)
+      return
     }
 
     pool.getConnection(function (err, connection) {
       if (!err) {
-        connection.query($sql.update, [param.name, param.age, +param.id], function (err, result) {
+        connection.query($sql.update, [param.teacher, param.salary, param.week, param.begin_time, param.end_time, +param.id], function (err, result) {
           if (!err) {
             // 使用页面进行跳转提示
             if (result.affectedRows > 0) {
-              res.render('suc', {
-                result: result
-              }) // 第二个参数可以直接在jade中使用
+              // 一对一授课
+              if (param.course_mode === 0) {
+
+              } else {
+                result = {
+                  code: 200,
+                  message: '编辑成功'
+                }
+              }
             } else {
-              res.render('fail', {
-                result: result
-              })
+              result = {
+                code: -1,
+                message: '找不到该课程'
+              }
             }
+            jsonWrite(res, result)
             connection.release()
+          } else {
+            databaseError(res, err)
           }
         })
       }

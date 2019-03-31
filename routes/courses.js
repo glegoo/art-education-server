@@ -27,7 +27,7 @@ router.get('/deleteStudent', function (req, res, next) {
   // courseDao.delete(req, res, next);
 })
 
-router.post('/update', function (req, res, next) {
+router.get('/update', function (req, res, next) {
   courseDao.update(req, res, next)
 })
 
