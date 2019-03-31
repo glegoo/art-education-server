@@ -1,8 +1,10 @@
 var mysql = require('mysql')
 var $conf = require('../conf/db')
 var $sql = require('./studentSqlMapping')
+const utils = require('../utils')
 
 var pool = mysql.createPool($conf.mysql)
+var databaseError = utils.databaseError
 
 var jsonWrite = function (res, ret) {
   if (typeof ret === 'undefined') {
@@ -13,14 +15,6 @@ var jsonWrite = function (res, ret) {
   } else {
     res.json(ret)
   }
-}
-
-var databaseError = function (res, err) {
-  console.log(err)
-  jsonWrite(res, {
-    code: -2,
-    message: '数据库操作失败'
-  })
 }
 
 module.exports = {

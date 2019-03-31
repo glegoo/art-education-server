@@ -1,8 +1,10 @@
 var mysql = require('mysql')
 var $conf = require('../conf/db')
 var $sql = require('./courseSqlMapping')
+const utils = require('../utils')
 
 var pool = mysql.createPool($conf.mysql)
+var databaseError = utils.databaseError
 
 var jsonWrite = function (res, ret) {
   if (typeof ret === 'undefined') {
@@ -29,11 +31,11 @@ module.exports = {
       var data = [
         param.course_type,
         param.course_mode,
+        param.teacher,
+        param.salary,
         param.week,
         param.begin_time,
         param.end_time,
-        param.teacher,
-        param.salary
       ]
 
       connection.query($sql.insert, data, function (err, result) {
@@ -41,11 +43,11 @@ module.exports = {
           throw err
         }
 
-        var id = result[0].insertId
+        var id = result.insertId
 
         param.students.forEach(student => {
           student = JSON.parse(student)
-          connection.query($sql.addStudentCourse, [student.id, id], function (err, result) {
+          connection.query($sql.addStudentCourse, [student.id, id, student.fee, student.left_times], function (err, result) {
             if (err) {
               throw err
             }
@@ -55,7 +57,8 @@ module.exports = {
         if (result) {
           result = {
             code: 200,
-            msg: '增加成功'
+            msg: '增加成功',
+            id: id
           }
         }
 
@@ -156,7 +159,7 @@ module.exports = {
         c.id,
         c.course_type,
         c.course_mode,
-        teacher_id as teacher,
+        teacher,
         t.name as teacher_name,
         salary,
         c.week,
@@ -170,8 +173,7 @@ module.exports = {
         student_course as sc 
         left join students as s on s.id=sc.student_id 
         left join courses as c on c.id=sc.course_id 
-        left join teacher_course as tc on c.id=tc.course_id 
-        left join teachers as t on t.id=tc.teacher_id 
+        left join teachers as t on t.id=c.teacher
         group by(c.id)`
         if (param.sort) {
           sql += param.sort === '-id' ? ' order by id desc' : ' order by id asc'
